@@ -35,11 +35,3 @@ class DDGSearcher:
                 result_a_tags = soup.findAll('a', class_='result__a', href=True)
                 result_links = [ link['href'] for link in result_a_tags if 'duckduckgo.com' not in link['href'] ]
                 return result_links
-
-
-if __name__ == '__main__':
-    # session = requests.Session()
-    for i in range(50):
-        print(i, DDGSearcher.ddg_search('耳鳴り')[0])
-        # response = session.get(DDGSearcher.create_ddg_link('耳鳴り'), headers=simple_headers)
-        # print(i, response.status_code)
