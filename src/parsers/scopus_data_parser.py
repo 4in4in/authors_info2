@@ -1,6 +1,4 @@
 import re
-from urllib.parse import urlparse
-from src.searchers.ddg_searcher import DDGSearcher
 from src.parsers.json_parser import JsonParser
 from src.utils.translator import GoogleTranslator
 from src.searchers.sites_searcher import SitesSearcher
