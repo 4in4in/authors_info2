@@ -12,13 +12,15 @@ class SitesSearcher:
 
     def search_university_site(self, university_name):
         if university_name in self.found_sites:
+            print(f'site for {university_name} from cache')
             return self.found_sites[university_name]
         else:
-            search_results = DDGSearcher.ddg_search(university_name, delay=0.05)
+            search_results = DDGSearcher.search_driver(university_name)
             if search_results:
                 found_site = search_results[0]
                 self.found_sites[university_name] = found_site
                 JsonParser.save_to_json(self.found_sites, self.found_sites_fname)
+                print(f'site for {university_name}: found, will be written to cache')
                 return found_site
 
 

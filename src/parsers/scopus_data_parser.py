@@ -1,6 +1,5 @@
 import re
 from src.parsers.json_parser import JsonParser
-from src.utils.translator import GoogleTranslator
 from src.searchers.sites_searcher import SitesSearcher
 
 sites_searcher = SitesSearcher()
@@ -100,24 +99,13 @@ class ScopusDataParser:
             for affil_type in ['affiliation_current', 'affiliation_history']:
                 if affil := author_object.get(affil_type):
                     for university_object in affil:
-                        url = university_object['url']
-                        if not ru and cls.check_ru_link(url):
-                            ru = True
-                        if url and url not in links:
-                            links.append(url)
+                        if university_object is not None:
+                            url = university_object.get('url')
+                            if not ru and cls.check_ru_link(url):
+                                ru = True
+                            if url and url not in links:
+                                links.append(url)
             names_and_urls_list.append({'name': name, 'links': links, 'ru': ru})
-        return names_and_urls_list
-
-    @classmethod
-    def get_ru_version(cls, names_and_urls_list):
-        names_original = []
-        for i in range (len(names_and_urls_list)):
-            names_original.append(names_and_urls_list[i]['name'])
-        print(names_original)
-        translated_names = GoogleTranslator.translate_many(names_original)
-        for i in range (len(names_and_urls_list)):
-            names_and_urls_list[i]['name'] = translated_names[i]
-
         return names_and_urls_list
 
     @classmethod
