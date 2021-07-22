@@ -44,7 +44,6 @@ async def get_info_from_google_async(links, path):
     print(f'{len(links)} found')
     for j in range(len(links)):
         tasks.append(get_info_from_link_async(links[j], j, path))
-    print(tasks)
     await asyncio.gather(*tasks)
 
 def search_info_item(author_info):
@@ -69,6 +68,6 @@ def search_from_list(list_to_search):
         search_info_item(author_info)
 
 if __name__ == '__main__':
-    test_data = JsonParser.read_json('ru_au4.json')
+    test_data = JsonParser.read_json('authors_info_0l.json')
     search_list = ScopusDataParser.get_list_to_search(test_data)
     search_from_list(search_list)

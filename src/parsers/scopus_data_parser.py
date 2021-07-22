@@ -124,7 +124,6 @@ class ScopusDataParser:
 
     @classmethod
     def check_ru_link(cls, link):
-        print(link)
         ru_signs = [ 'ru', 'ua', 'by', 'kz', 'uz' ]
         for sign in ru_signs:
             if re.findall(r'\.{}'.format(sign), link):
