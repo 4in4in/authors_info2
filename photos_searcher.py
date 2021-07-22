@@ -33,6 +33,7 @@ def get_info_from_link(link, file_name, path):
 async def get_info_from_link_async(link, file_name, path):
     info = await SitesParser.get_page_text_async(link)
     if info:
+        print(f'recieved info from link {link}')
         link_text = f'Page link: {link}'
         separator = f'\n\n{"-"*len(link_text)}\n\n'
         info = link_text + separator + info
@@ -41,7 +42,6 @@ async def get_info_from_link_async(link, file_name, path):
 async def get_info_from_google_async(links, path):
     links = links[:5]
     tasks = []
-    print(f'{len(links)} found')
     for j in range(len(links)):
         tasks.append(get_info_from_link_async(links[j], j, path))
     await asyncio.gather(*tasks)
@@ -58,6 +58,7 @@ def search_info_item(author_info):
     for i in range(len(links)):
         link = links[i]
         if ru: link = ScopusDataParser.remove_en_signs_link(link)
+        print(f'searching with link {link}')
         img_links = search_author_photo(name, link, i, author_path)
         if img_links: asyncio.run(get_info_from_google_async(img_links, author_path))
         time.sleep(uniform(2.0, 5.0))
@@ -68,6 +69,7 @@ def search_from_list(list_to_search):
         search_info_item(author_info)
 
 if __name__ == '__main__':
-    test_data = JsonParser.read_json('authors_info_0l.json')
+    test_data = JsonParser.read_json('authors_info_2l.json')
     search_list = ScopusDataParser.get_list_to_search(test_data)
+    JsonParser.save_to_json(search_list, 'links.json')
     search_from_list(search_list)

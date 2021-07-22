@@ -1,6 +1,7 @@
 import re
 from src.parsers.json_parser import JsonParser
 from src.searchers.sites_searcher import SitesSearcher
+from urllib.parse import urlparse
 
 sites_searcher = SitesSearcher()
 
@@ -103,7 +104,8 @@ class ScopusDataParser:
                             url = university_object.get('url')
                             if not ru and cls.check_ru_link(url):
                                 ru = True
-                            if url and url not in links:
+                            if '://' in url: url = urlparse(url).netloc
+                            if url not in links:
                                 links.append(url)
             names_and_urls_list.append({'name': name, 'links': links, 'ru': ru})
         return names_and_urls_list
