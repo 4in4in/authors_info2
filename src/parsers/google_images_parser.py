@@ -28,15 +28,16 @@ class GoogleImagesParser:
 
     @classmethod
     def get_images(cls, html_data):
-        if html_data:
-            html_doc = BeautifulSoup(html_data, features='html.parser')
-            img_tags = html_doc.findAll('img', { 'jsname': True, 'src': True })
-            image_infos = []
-            for img_tag in img_tags[:20]: # потому что после 20-го тега содержимого изображеня в нём нет
-                url = img_tag.parent.parent.parent.find('a', { 'href': True, 'target': '_blank' })['href']
-                image_infos.append(ImageInfo(img_tag['src'], url))
+        if not html_data:
+            return
+        html_doc = BeautifulSoup(html_data, features='html.parser')
+        img_tags = html_doc.findAll('img', { 'jsname': True, 'src': True })
+        image_infos = []
+        for img_tag in img_tags[:20]: # потому что после 20-го тега содержимого изображеня в нём нет
+            url = img_tag.parent.parent.parent.find('a', { 'href': True, 'target': '_blank' })['href']
+            image_infos.append(ImageInfo(img_tag['src'], url))
 
-            return image_infos
+        return image_infos
 
 if __name__ == '__main__':
     with open('./test_files/test3.html', 'r') as f:

@@ -37,12 +37,15 @@ class SitesParser:
         async with aiohttp.ClientSession() as session:
             try:
                 async with session.get(link, **params) as response:
-                    if 'text/html' in response.headers['Content-Type']:
-                        html_text = await response.text(errors='ignore')
-                        html_doc = BeautifulSoup(html_text, features='html.parser')
-                        if html_doc.find('html'):
-                            info = cls.normalize_page_text(html_doc.find('html').getText(' '))
-                            return info
+                    if 'Content-Type' not in response.headers: 
+                        return
+                    if 'text/html' not in response.headers['Content-Type']: 
+                        return
+                    html_text = await response.text(errors='ignore')
+                    html_doc = BeautifulSoup(html_text, features='html.parser')
+                    if html_doc.find('html'):
+                        info = cls.normalize_page_text(html_doc.find('html').getText(' '))
+                        return info
             except (TimeoutError, ClientConnectorSSLError, ClientConnectorError) as e:
                 print(e)
 

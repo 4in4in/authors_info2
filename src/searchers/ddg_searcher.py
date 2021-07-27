@@ -35,15 +35,15 @@ class DDGSearcher:
         if delay:
             time.sleep(delay)
         try:
-            # response = requests.get(ddg_link, headers=simple_headers, timeout=3)
             response = requests.get(ddg_link, headers=simple_headers, timeout=3)
         except Exception as e:
             print(e)
         else:
             print(ddg_link, response.status_code)
-            if response.status_code == 200:
-                html_doc = response.text
-                soup = BeautifulSoup(html_doc, features='html.parser')
-                result_a_tags = soup.findAll('a', class_='result__a', href=True)
-                result_links = [ link['href'] for link in result_a_tags if 'duckduckgo.com' not in link['href'] ]
-                return result_links
+            if response.status_code != 200:
+                return
+            html_doc = response.text
+            soup = BeautifulSoup(html_doc, features='html.parser')
+            result_a_tags = soup.findAll('a', class_='result__a', href=True)
+            result_links = [ link['href'] for link in result_a_tags if 'duckduckgo.com' not in link['href'] ]
+            return result_links
