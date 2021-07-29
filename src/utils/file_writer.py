@@ -12,8 +12,10 @@ class FileWriter:
     @classmethod
     def save_image(cls, img_bytes, name, extension, path):
         cls.create_folder_if_not_exist(path)
-        with open(f'{path}/{name}.{extension}', 'wb') as f:
+        path_to_save = f'{path}/{name}.{extension}'
+        with open(path_to_save, 'wb') as f:
             f.write(img_bytes)
+        return path_to_save
 
     @classmethod
     def save_info(cls, info_text, name, path):

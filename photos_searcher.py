@@ -6,7 +6,8 @@ from src.parsers.json_parser import JsonParser
 from src.parsers.scopus_data_parser import ScopusDataParser
 from src.utils.translator import GoogleTranslator
 from src.utils.file_writer import FileWriter
-from src.utils.mysql import MySqlDatabase
+
+from connector import Database
 
 import time
 from random import uniform
@@ -56,9 +57,10 @@ async def get_info_from_google_async(links, path):
 def search_info_item(author_info):
     ru = author_info['ru']
     name = author_info['name'] 
+    links = author_info['links']
     if ru:
         name = GoogleTranslator.translate_one(name)
-    links = author_info['links']
+        links.extend(['habr.com', 'vc.ru', 'medium.com'])
     author_path = f'{out_path}/{name}'
 
     print(f'Author: {name}, Total links: {len(links)}, Out path: {author_path}')
@@ -78,8 +80,9 @@ def search_from_list(list_to_search):
     for author_info in list_to_search:
         search_info_item(author_info)
 
+
 if __name__ == '__main__':
-    test_data = JsonParser.read_json('authors_info_3l.json')
+    test_data = JsonParser.read_json('ru_au1.json')
     search_list = ScopusDataParser.get_list_to_search(test_data)
     JsonParser.save_to_json(search_list, 'links.json')
     search_from_list(search_list)
