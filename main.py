@@ -1,9 +1,19 @@
 
+from dns.resolver import query
+import uvicorn
+from fastapi import FastAPI, BackgroundTasks
 
-from src.parsers.scopus_data_parser import ScopusDataParser
-from src.parsers.json_parser import JsonParser
+from search import Searcher
+from connector import Database
 
-list_without_links = JsonParser.read_json('author_infos_raw.json')
-list_with_links = ScopusDataParser.get_universities_authors_list(list_without_links)
-JsonParser.save_to_json(list_with_links, 'ru_au4.json')
+app = FastAPI()
 
+@app.get('/search')
+def search(background_tasks: BackgroundTasks, query_id: int):
+    searcher = Searcher()
+    authors_to_search = Database.get_authors(query_id)
+    background_tasks.add_task(searcher.search, authors_to_search)
+    return {'response': {'message': f'Start search authors photos for query #{query_id}'}}
+
+if __name__ == '__main__':
+    uvicorn.run(app, host='0.0.0.0', port=8003)
