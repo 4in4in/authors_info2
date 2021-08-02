@@ -21,17 +21,14 @@ class Searcher:
         if not authors_list:
             return 'No authors to search.'
         prepared_list = self.prepare_authors_list(authors_list)
-        ### удалять повторяющиеся адреса
         for author_info in prepared_list:
             self.search_author(author_info)
 
-    def prepare_authors_list(self, authors_list, search_site=False):
+    def prepare_authors_list(self, authors_list):
         result = []
         for author_info in authors_list:
-            if author_info.url is None and not search_site:
+            if author_info.url is None:
                 continue
-            if (author_info.url is None and author_info.affiliation_name is not None):
-                author_info.url = self.sites_searcher.search_university_site(author_info.affiliation_name)
             if author_info.country == 'Russian Federation':
                 author_info.url = ScopusDataParser.remove_en_signs_link(author_info.url)
             result.append(author_info)
@@ -64,7 +61,8 @@ class Searcher:
                 Database.write_raw_info(author_info.author_id, images[i].url, info_raw)
             
             if images[i].has_face:
-                file_name = f'{author_info.author_id}_{author_info.affiliation_id}_{i}'
+                info_id = Database.get_last_info_id()
+                file_name = f'{author_info.author_id}_{info_id}_{i}'
                 saved_path = self.save_image(images[i], file_name)
                 print(f'saving photo: {saved_path}')
                 Database.write_img_info(author_info.author_id, saved_path)
@@ -77,5 +75,6 @@ class Searcher:
 
 if __name__ == '__main__':
     searcher = Searcher()
-    authors_to_search = Database.get_authors()
+    query_id = 5
+    authors_to_search = Database.get_authors(query_id)
     searcher.search(authors_to_search)

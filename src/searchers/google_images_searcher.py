@@ -3,7 +3,8 @@ from urllib.parse import urlencode
 import requests
 import selenium
 from src.utils.req_headers import google_headers
-from src.utils.webdriver.webdriver import driver
+# from src.utils.webdriver.webdriver import driver
+from src.utils.remote_webdriver import driver
 from selenium.common.exceptions import TimeoutException, WebDriverException
 
 class GoogleImagesSearcher:

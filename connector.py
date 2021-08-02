@@ -1,8 +1,5 @@
 
-from os import name
-from types import ClassMethodDescriptorType
 import mysql.connector
-from mysql.connector import connection
 from mysql.connector.errors import Error
 
 def clrscr():
@@ -83,19 +80,34 @@ class Query:
             first_name,
             last_name,
             indexed_name,
-            affiliation_id,
-            name,
             country,
-            scopus_affiliation.url
-        FROM scopus_author_affiliation_history 
-        INNER JOIN scopus_author ON author_id = scopus_author.id 
+            scopus_affiliation.url AS url
+        FROM scopus_author_affiliation_history
+        INNER JOIN scopus_author ON author_id = scopus_author.id
         INNER JOIN scopus_affiliation ON affiliation_id = scopus_affiliation.id
+        WHERE author_id IN 
+        (
+            SELECT DISTINCT author_id FROM scopus_paper_query
+            INNER JOIN scopus_paper_author ON scopus_paper_id = paper_id
+            WHERE query_id={}
+        )
+        GROUP BY url, author_id, country
+        HAVING url IS NOT NULL
+        ORDER BY author_id
+
     '''
 
     get_found_authors = '''
-        SELECT scopus_author_id FROM scopus_author_info_raw
+        SELECT DISTINCT scopus_author_id FROM scopus_author_info_raw
         UNION
-        SELECT scopus_author_id FROM scopus_author_photo
+        SELECT DISTINCT scopus_author_id FROM scopus_author_photo
+    '''
+
+    get_last_info_id = '''
+        SELECT author_info_raw_id
+        FROM scopus_author_info_raw
+        ORDER BY author_info_raw_id DESC
+        LIMIT 1
     '''
 
 class ScopusAuthor:
@@ -104,18 +116,16 @@ class ScopusAuthor:
         self.first_name = db_object[1]
         self.last_name = db_object[2]
         self.indexed_name = db_object[3]
-        self.affiliation_id = db_object[4]
-        self.affiliation_name = db_object[5]
-        self.country = db_object[6]
-        self.url = db_object[7]
+        self.country = db_object[4]
+        self.url = db_object[5]
 
 class Database:
 
     db = Connector()
 
     @classmethod
-    def get_authors(cls):
-        data = cls.db.execute_query([Query.get_authors])
+    def get_authors(cls, query_id):
+        data = cls.db.execute_query([Query.get_authors.format(query_id)])
         authors = [ ScopusAuthor(db_object) for db_object in data ]
         return authors
 
@@ -140,8 +150,15 @@ class Database:
             found_authors_id = [row_data[0] for row_data in data]
             return found_authors_id
 
+    @classmethod
+    def get_last_info_id(cls):
+        data = cls.db.execute_query([Query.get_last_info_id])
+        if data:
+            return data[0][0]
+
+
 if __name__ == '__main__':
     clrscr()
     db = Connector()
-    authors = Database.get_authors()
+    # authors = Database.get_authors()
     

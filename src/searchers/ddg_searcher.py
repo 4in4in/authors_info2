@@ -7,7 +7,8 @@ import requests
 from bs4 import BeautifulSoup
 
 from src.utils.req_headers import simple_headers, ddg_headers
-from src.utils.webdriver.webdriver import driver
+# from src.utils.webdriver.webdriver import driver
+from src.utils.remote_webdriver import driver
 
 class DDGSearcher:
 

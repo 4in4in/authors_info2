@@ -10,7 +10,7 @@ class ImageInfo:
         self.url = url
         self.img_str = self.get_b64_img_str(src_str)
         self.extension = self.get_img_extension(src_str)
-        self.img_bytes = b64decode(self.img_str)
+        self.img_bytes = self.get_img_bytes(self.img_str)
         self.has_face = FaceDetector.is_image_contains_face(self.img_bytes)
 
     def get_b64_img_str(self, src_str):
@@ -23,6 +23,14 @@ class ImageInfo:
         extension_end = src_str.find(';')
         extension = src_str[ extension_start : extension_end ]
         return extension
+    
+    def get_img_bytes(self, img_str):
+        try:
+            img_bytes = b64decode(img_str)
+        except:
+            img_bytes = None
+            print('\n\n'+img_str+'\n\n')
+        return img_bytes
 
 class GoogleImagesParser:
 
@@ -35,7 +43,9 @@ class GoogleImagesParser:
         image_infos = []
         for img_tag in img_tags[:20]: # потому что после 20-го тега содержимого изображеня в нём нет
             url = img_tag.parent.parent.parent.find('a', { 'href': True, 'target': '_blank' })['href']
-            image_infos.append(ImageInfo(img_tag['src'], url))
+            img_info = ImageInfo(img_tag['src'], url)
+            if img_info.img_bytes:
+                image_infos.append(ImageInfo(img_tag['src'], url))
 
         return image_infos
 
